@@ -19,8 +19,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ValidasiAksesoris">
         <activity
+            android:name=".ui.scanner.QrScannerActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.accessory.AccessoryActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
