@@ -75,6 +75,7 @@
             android:background="@drawable/edit_text"
             android:fontFamily="@font/opensans"
             android:textSize="16sp"
+            android:singleLine="true"
             android:textColorHint="@color/black"
             android:textColor="@color/black"
             android:hint="Masukkan kode manual"/>
