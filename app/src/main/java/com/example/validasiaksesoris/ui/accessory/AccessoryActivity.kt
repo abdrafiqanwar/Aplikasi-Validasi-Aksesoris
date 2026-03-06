@@ -107,6 +107,12 @@ class AccessoryActivity : AppCompatActivity() {
             }
 
         binding.btnSubmit.setOnClickListener {
+
+            if (accessoryAdapter.hasUnselected()) {
+                showAlert("Silahkan pilih status aksesoris", AlertType.ERROR)
+                return@setOnClickListener
+            }
+
             val selectedVehicleModel = binding.vehicleModel.selectedItem
             val selectedAccessories = accessoryAdapter.getSelection()
 
@@ -173,8 +179,11 @@ class AccessoryActivity : AppCompatActivity() {
                     AlertType.ERROR -> R.drawable.ic_error
                 }
             )
-            .setPositiveButton("OK") { _, _ ->
-                finish()
+            .setPositiveButton("OK") { dialog , _ ->
+                when (type) {
+                    AlertType.SUCCESS -> finish()
+                    AlertType.ERROR -> dialog.dismiss()
+                }
             }
             .setCancelable(false)
             .show()

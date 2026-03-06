@@ -108,4 +108,6 @@ class AccessoryAdapter (
         enable = enabled
         notifyDataSetChanged()
     }
+
+    fun hasUnselected(): Boolean = selections.size < accessories.size
 }
