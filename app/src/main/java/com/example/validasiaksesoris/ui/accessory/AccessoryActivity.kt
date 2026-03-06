@@ -1,7 +1,5 @@
 package com.example.validasiaksesoris.ui.accessory
 
-import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -9,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -19,7 +16,6 @@ import com.example.validasiaksesoris.data.model.AccessoryItem
 import com.example.validasiaksesoris.data.model.AccessoryRequest
 import com.example.validasiaksesoris.databinding.ActivityAccessoryBinding
 import com.example.validasiaksesoris.di.Result
-import com.example.validasiaksesoris.ui.MainActivity
 import com.example.validasiaksesoris.ui.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -27,7 +23,7 @@ class AccessoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAccessoryBinding
     private val viewModel by viewModels<AccessoryViewModel> {
-        ViewModelFactory.Companion.getInstance()
+        ViewModelFactory.getInstance()
     }
     private lateinit var accessoryAdapter: AccessoryAdapter
     private lateinit var vehicleName: Array<String>
@@ -59,8 +55,6 @@ class AccessoryActivity : AppCompatActivity() {
                 emptyList()
             }
         }
-
-        val allAccessories = resources.getStringArray(R.array.all_accessories)
 
         binding.rvAccessory.layoutManager = LinearLayoutManager(this)
         accessoryAdapter = AccessoryAdapter(mutableListOf())
@@ -115,14 +109,11 @@ class AccessoryActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener {
             val selectedVehicleModel = binding.vehicleModel.selectedItem
             val selectedAccessories = accessoryAdapter.getSelection()
-            val finalAccessories = allAccessories.associateWith {
-                selectedAccessories[it] ?: false
-            }
 
             val request = AccessoryRequest(
                 frameNumber.toString(),
                 selectedVehicleModel.toString(),
-                finalAccessories
+                selectedAccessories
             )
 
             viewModel.sendData(request).observe(this) { data ->
