@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.validasiaksesoris.R
-import com.example.validasiaksesoris.data.model.AccessoryItem
+import com.example.validasiaksesoris.data.model.accessory.AccessoryItem
 import com.example.validasiaksesoris.databinding.ItemAccessoryBinding
 
 class AccessoryAdapter (

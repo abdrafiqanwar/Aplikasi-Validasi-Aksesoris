@@ -1,4 +1,4 @@
-package com.example.validasiaksesoris.data.model
+package com.example.validasiaksesoris.data.model.accessory
 
 data class AccessoryItem(
     val key: String,

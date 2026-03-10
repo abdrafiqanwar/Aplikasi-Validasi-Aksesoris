@@ -2,8 +2,8 @@ package com.example.validasiaksesoris.pref
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import com.example.validasiaksesoris.data.model.AccessoryResponse
-import com.example.validasiaksesoris.data.model.AccessoryRequest
+import com.example.validasiaksesoris.data.model.accessory.AccessoryResponse
+import com.example.validasiaksesoris.data.model.accessory.AccessoryRequest
 import com.example.validasiaksesoris.data.retrofit.ApiService
 import com.example.validasiaksesoris.di.Result
 import com.google.gson.Gson

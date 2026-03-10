@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.validasiaksesoris.R
-import com.example.validasiaksesoris.data.model.AccessoryItem
-import com.example.validasiaksesoris.data.model.AccessoryRequest
+import com.example.validasiaksesoris.data.model.accessory.AccessoryItem
+import com.example.validasiaksesoris.data.model.accessory.AccessoryRequest
 import com.example.validasiaksesoris.databinding.ActivityAccessoryBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
