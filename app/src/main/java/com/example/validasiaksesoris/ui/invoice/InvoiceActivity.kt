@@ -1,6 +1,7 @@
 package com.example.validasiaksesoris.ui.invoice
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -30,16 +31,27 @@ class InvoiceActivity : AppCompatActivity() {
         viewModel.getData().observe(this) {
             if (it != null) {
                 when (it) {
-                    is Result.Loading -> {}
+                    is Result.Loading -> {
+                        showLoading(true)
+                    }
                     is Result.Success -> {
+                        showLoading(false)
                         data.clear()
                         data.addAll(it.data)
                         val adapter = InvoiceAdapter(data)
                         binding.rvFrameNumber.adapter = adapter
                     }
-                    is Result.Error -> {}
+                    is Result.Error -> {
+                        showLoading(false)
+                    }
                 }
             }
         }
+    }
+
+    private fun showLoading(show: Boolean) {
+        binding.btnSubmit.visibility = if (show) View.GONE else View.VISIBLE
+        binding.tvTitle.visibility = if (show) View.GONE else View.VISIBLE
+        binding.pb.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
