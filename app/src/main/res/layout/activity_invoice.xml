@@ -55,6 +55,7 @@
         android:background="@drawable/edit_text"
         android:textFontWeight="600"
         android:textColor="@color/black"
-        android:text="Cetak Invoice"/>
+        android:text="Cetak Invoice"
+        android:enabled="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

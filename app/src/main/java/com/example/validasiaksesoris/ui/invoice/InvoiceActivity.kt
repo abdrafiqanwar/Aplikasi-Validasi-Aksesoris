@@ -2,6 +2,7 @@ package com.example.validasiaksesoris.ui.invoice
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class InvoiceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityInvoiceBinding
+    private lateinit var adapter: InvoiceAdapter
     private val viewModel by viewModels<InvoiceViewModel> {
         ViewModelFactory.getInstance()
     }
@@ -38,7 +40,19 @@ class InvoiceActivity : AppCompatActivity() {
                         showLoading(false)
                         data.clear()
                         data.addAll(it.data)
-                        val adapter = InvoiceAdapter(data)
+                        adapter = InvoiceAdapter(data) {
+                            val selectedCount = data.count{ it.isSelected }
+
+                            if (selectedCount > 20) {
+                                data[it].isSelected = false
+                                adapter.notifyItemChanged(it)
+
+                                Toast.makeText(this, "Maksimal 20 nomor rangka", Toast.LENGTH_SHORT).show()
+                                return@InvoiceAdapter
+                            }
+
+                            binding.btnSubmit.isEnabled = selectedCount > 0
+                        }
                         binding.rvFrameNumber.adapter = adapter
                     }
                     is Result.Error -> {

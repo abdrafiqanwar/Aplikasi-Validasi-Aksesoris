@@ -7,7 +7,8 @@ import com.example.validasiaksesoris.data.model.invoice.FrameNumber
 import com.example.validasiaksesoris.databinding.ItemFrameNumberBinding
 
 class InvoiceAdapter(
-    private val frameNumbers: List<FrameNumber>
+    private val frameNumbers: List<FrameNumber>,
+    private val onCheckedChange: (Int) -> Unit
 ) : RecyclerView.Adapter<InvoiceAdapter.ViewHolder>() {
 
     class ViewHolder(val binding: ItemFrameNumberBinding) : RecyclerView.ViewHolder(binding.root)
@@ -31,6 +32,7 @@ class InvoiceAdapter(
 
         holder.binding.cb.setOnCheckedChangeListener { _, isChecked ->
             item.isSelected = isChecked
+            onCheckedChange(position)
         }
     }
 
