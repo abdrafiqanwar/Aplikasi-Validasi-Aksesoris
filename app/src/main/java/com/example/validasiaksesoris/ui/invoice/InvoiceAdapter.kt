@@ -25,7 +25,7 @@ class InvoiceAdapter(
         position: Int
     ) {
         val item = frameNumbers[position]
-        holder.binding.tv.text = item.frameNumber
+        holder.binding.cb.text = item.frameNumber
         holder.binding.cb.setOnCheckedChangeListener(null)
         holder.binding.cb.isChecked = item.isSelected
 
