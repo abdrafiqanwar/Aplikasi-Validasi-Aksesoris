@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.example.validasiaksesoris.databinding.ActivityMainBinding
 import com.example.validasiaksesoris.ui.accessory.AccessoryActivity
+import com.example.validasiaksesoris.ui.invoice.InvoiceActivity
 import com.example.validasiaksesoris.ui.scanner.QrScannerActivity
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -31,6 +32,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnScan.setOnClickListener {
             val intent = Intent(this, QrScannerActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnInvoice.setOnClickListener {
+            val intent = Intent(this, InvoiceActivity::class.java)
             startActivity(intent)
         }
     }
