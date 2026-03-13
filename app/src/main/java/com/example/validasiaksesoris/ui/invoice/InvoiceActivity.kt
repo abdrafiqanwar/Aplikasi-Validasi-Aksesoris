@@ -130,6 +130,43 @@ class InvoiceActivity : AppCompatActivity() {
 
         canvas.drawLine(130f, 110f, 555f, 110f, linePaint)
 
+        val invoice = Paint().apply {
+            textSize = 16f
+            textAlign = Paint.Align.CENTER
+            isUnderlineText = true
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        canvas.drawText("INVOICE", 300f, 140f, invoice)
+
+        val invoiceNum = Paint().apply {
+            textSize = 14f
+            textAlign = Paint.Align.CENTER
+        }
+
+        canvas.drawText("INV. 02600048", 300f, 160f, invoiceNum)
+
+        val normalText = Paint().apply {
+            textSize = 14f
+        }
+
+        val boldText = Paint().apply {
+            textSize = 14f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        canvas.drawText("Kepada Yth.", 40f, 200f, normalText)
+        canvas.drawText("PT.HADJI KALLA", 40f, 220f, boldText)
+        canvas.drawText("Wisma Kalla Lt.12", 40f, 240f, normalText)
+        canvas.drawText("Makassar", 40f, 260f, normalText)
+
+        canvas.drawText("Tanggal", 380f, 200f, normalText)
+        canvas.drawText(":", 460f, 200f, normalText)
+        canvas.drawText("28-Feb-26", 475f, 200f, normalText)
+        canvas.drawText("Mata Uang", 380f, 220f, normalText)
+        canvas.drawText(":", 460f, 220f, normalText)
+        canvas.drawText("IDR", 475f, 220f, normalText)
+
         pdfDocument.finishPage(page)
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
