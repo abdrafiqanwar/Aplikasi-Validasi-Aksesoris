@@ -5,14 +5,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
-import com.example.validasiaksesoris.data.retrofit.ApiConfig
 import com.example.validasiaksesoris.databinding.ActivityInvoiceBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
-import kotlinx.coroutines.launch
 
 class InvoiceActivity : AppCompatActivity() {
 
@@ -33,13 +30,11 @@ class InvoiceActivity : AppCompatActivity() {
         viewModel.getData().observe(this) {
             if (it != null) {
                 when (it) {
-                    is Result.Loading -> {
-                        showLoading(true)
-                    }
+                    is Result.Loading -> { showLoading(true) }
                     is Result.Success -> {
                         showLoading(false)
                         data.clear()
-                        data.addAll(it.data)
+                        data.addAll(it.data.filter { !it.frameNumber.isNullOrEmpty() })
                         adapter = InvoiceAdapter(data) {
                             val selectedCount = data.count{ it.isSelected }
 
@@ -55,9 +50,7 @@ class InvoiceActivity : AppCompatActivity() {
                         }
                         binding.rvFrameNumber.adapter = adapter
                     }
-                    is Result.Error -> {
-                        showLoading(false)
-                    }
+                    is Result.Error -> { showLoading(false) }
                 }
             }
         }
