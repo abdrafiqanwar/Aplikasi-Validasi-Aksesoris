@@ -1,15 +1,26 @@
 package com.example.validasiaksesoris.ui.invoice
 
+import android.graphics.BitmapFactory
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.Typeface
+import android.graphics.pdf.PdfDocument
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.validasiaksesoris.R
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
+import com.example.validasiaksesoris.data.model.invoice.InvoiceResponse
 import com.example.validasiaksesoris.databinding.ActivityInvoiceBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
+import java.io.File
+import java.io.FileOutputStream
 
 class InvoiceActivity : AppCompatActivity() {
 
@@ -54,11 +65,82 @@ class InvoiceActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding.btnSubmit.setOnClickListener {
+            val frameNumberSelected = data
+                .filter { it.isSelected }
+                .map { it.frameNumber }
+
+            val frameNumber = frameNumberSelected.joinToString(",")
+
+            viewModel.getInvoice(frameNumber).observe(this) {
+                if (it != null) {
+                    when (it) {
+                        is Result.Loading -> { showLoading(true )}
+                        is Result.Success -> {
+                            showLoading(false)
+
+                            val data = it.data
+
+                            createPdf(data)
+                        }
+                        is Result.Error -> { showLoading(false) }
+                    }
+                }
+            }
+        }
     }
 
     private fun showLoading(show: Boolean) {
         binding.btnSubmit.visibility = if (show) View.GONE else View.VISIBLE
         binding.tvTitle.visibility = if (show) View.GONE else View.VISIBLE
         binding.pb.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun createPdf(invoices: List<InvoiceResponse>) {
+        val pdfDocument = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // width, height, page number
+        val page = pdfDocument.startPage(pageInfo)
+        val canvas = page.canvas
+
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.logo)
+        val src = Rect(0, 0, bitmap.width, bitmap.height)
+        val dst = Rect(40, 40, 125, 125)
+        val paint = Paint().apply {
+            isAntiAlias = true
+            isFilterBitmap = true
+        }
+        canvas.drawBitmap(bitmap, src, dst, paint)
+
+        val textAddress = Paint().apply {
+            textSize = 12f
+            textAlign = Paint.Align.RIGHT
+        }
+
+        canvas.drawText("Citra Tower, Lv. 20. Unit A", 555f, 60f, textAddress)
+        canvas.drawText("Kemayoran Jakarta 10630", 555f, 75f, textAddress)
+        canvas.drawText("Indonesia", 555f, 90f, textAddress)
+        canvas.drawText("+6221-39719888", 555f, 105f, textAddress)
+
+        val linePaint = Paint().apply {
+            color = ContextCompat.getColor(this@InvoiceActivity, R.color.line)
+            strokeWidth = 4f
+        }
+
+        canvas.drawLine(130f, 110f, 555f, 110f, linePaint)
+
+        pdfDocument.finishPage(page)
+        val file = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "invoice.pdf"
+        )
+        try {
+            pdfDocument.writeTo(FileOutputStream(file))
+            // Show success message
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Handle error
+        }
+        pdfDocument.close()
     }
 }
