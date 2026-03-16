@@ -123,8 +123,9 @@ class InvoiceActivity : AppCompatActivity() {
         canvas.drawBitmap(bitmap, src, dst, paint)
 
         val textAddress = Paint().apply {
-            textSize = 12f
+            textSize = 10f
             textAlign = Paint.Align.RIGHT
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
         canvas.drawText("Citra Tower, Lv. 20. Unit A", 555f, 60f, textAddress)
@@ -140,7 +141,7 @@ class InvoiceActivity : AppCompatActivity() {
         canvas.drawLine(130f, 110f, 555f, 110f, linePaint)
 
         val invoice = Paint().apply {
-            textSize = 16f
+            textSize = 12f
             textAlign = Paint.Align.CENTER
             isUnderlineText = true
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -149,18 +150,18 @@ class InvoiceActivity : AppCompatActivity() {
         canvas.drawText("INVOICE", 300f, 140f, invoice)
 
         val invoiceNum = Paint().apply {
-            textSize = 14f
+            textSize = 10f
             textAlign = Paint.Align.CENTER
         }
 
-        canvas.drawText("INV. 02600048", 300f, 160f, invoiceNum)
+        canvas.drawText("INV.", 280f, 160f, invoiceNum)
 
         val normalText = Paint().apply {
-            textSize = 14f
+            textSize = 10f
         }
 
         val boldText = Paint().apply {
-            textSize = 14f
+            textSize = 10f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
