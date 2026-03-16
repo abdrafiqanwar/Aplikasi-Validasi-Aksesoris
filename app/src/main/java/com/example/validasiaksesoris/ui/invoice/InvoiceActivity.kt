@@ -110,7 +110,10 @@ class InvoiceActivity : AppCompatActivity() {
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas
 
-        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.logo)
+        val options = BitmapFactory.Options().apply {
+            inSampleSize = 4
+        }
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.logo, options)
         val src = Rect(0, 0, bitmap.width, bitmap.height)
         val dst = Rect(40, 40, 125, 125)
         val paint = Paint().apply {
