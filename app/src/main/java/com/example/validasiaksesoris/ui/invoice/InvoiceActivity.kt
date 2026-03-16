@@ -176,6 +176,84 @@ class InvoiceActivity : AppCompatActivity() {
         canvas.drawText(":", 460f, 220f, normalText)
         canvas.drawText("IDR", 475f, 220f, normalText)
 
+        val tablePaint = Paint().apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 1f
+        }
+
+        val headerTable = Paint().apply {
+            textSize = 10f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        val colNo = 40f
+        val colFrame = 70f
+        val colItem = 190f
+        val colPrice = 440f
+        var y = 300f
+
+        canvas.drawText("No.", colNo, y, headerTable)
+        canvas.drawText("Nomor Rangka", colFrame, y, headerTable)
+        canvas.drawText("Uraian", colItem, y, headerTable)
+        canvas.drawText("Harga Satuan", colPrice, y, headerTable)
+
+        y += 10f
+        canvas.drawLine(40f, y, 555f, y, tablePaint)
+
+        y += 15f
+
+        val tableText = Paint().apply {
+            textSize = 8f
+        }
+
+        var no = 1
+        var grandTotal = 0
+
+        invoices.forEach { frame ->
+            var totalFrame = 0
+            var firstItem = true
+
+            frame.accessories.forEach { item ->
+                totalFrame += item.price
+
+                canvas.drawText(if (firstItem) no.toString() else "", colNo, y, tableText)
+                canvas.drawText(if (firstItem) frame.frameNumber else "", colFrame, y, tableText)
+
+                canvas.drawText(item.name, colItem, y, tableText)
+                canvas.drawText(item.price.toString(), colPrice, y, tableText)
+
+                y += 15f
+                firstItem = false
+            }
+
+            grandTotal += totalFrame
+
+            val subtotal = Paint().apply {
+                textSize = 8f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+
+            }
+            canvas.drawText("Subtotal", colItem, y, subtotal)
+            canvas.drawText(totalFrame.toString(), colPrice, y, subtotal)
+
+            y += 20f
+            no++
+        }
+
+        y -= 10f
+
+        canvas.drawLine(40f, y, 555f, y, tablePaint)
+
+        y += 15f
+
+        val totalPaint = Paint().apply {
+            textSize = 10f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        canvas.drawText("Total", colItem, y, totalPaint)
+        canvas.drawText(grandTotal.toString(), colPrice, y, totalPaint)
+
         pdfDocument.finishPage(page)
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
