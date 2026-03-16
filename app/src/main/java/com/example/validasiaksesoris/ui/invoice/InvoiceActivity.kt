@@ -21,6 +21,9 @@ import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class InvoiceActivity : AppCompatActivity() {
 
@@ -99,6 +102,9 @@ class InvoiceActivity : AppCompatActivity() {
     }
 
     private fun createPdf(invoices: List<InvoiceResponse>) {
+        val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
+        val formattedDate = sdf.format(Date())
+
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // width, height, page number
         val page = pdfDocument.startPage(pageInfo)
@@ -162,7 +168,7 @@ class InvoiceActivity : AppCompatActivity() {
 
         canvas.drawText("Tanggal", 380f, 200f, normalText)
         canvas.drawText(":", 460f, 200f, normalText)
-        canvas.drawText("28-Feb-26", 475f, 200f, normalText)
+        canvas.drawText(formattedDate, 475f, 200f, normalText)
         canvas.drawText("Mata Uang", 380f, 220f, normalText)
         canvas.drawText(":", 460f, 220f, normalText)
         canvas.drawText("IDR", 475f, 220f, normalText)
