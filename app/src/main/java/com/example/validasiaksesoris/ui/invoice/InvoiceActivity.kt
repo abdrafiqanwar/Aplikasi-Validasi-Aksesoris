@@ -115,7 +115,7 @@ class InvoiceActivity : AppCompatActivity() {
         }
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.logo, options)
         val src = Rect(0, 0, bitmap.width, bitmap.height)
-        val dst = Rect(40, 40, 125, 125)
+        val dst = Rect(100, 40, 185, 125)
         val paint = Paint().apply {
             isAntiAlias = true
             isFilterBitmap = true
@@ -123,22 +123,22 @@ class InvoiceActivity : AppCompatActivity() {
         canvas.drawBitmap(bitmap, src, dst, paint)
 
         val textAddress = Paint().apply {
-            textSize = 10f
+            textSize = 8f
             textAlign = Paint.Align.RIGHT
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
-        canvas.drawText("Citra Tower, Lv. 20. Unit A", 555f, 60f, textAddress)
-        canvas.drawText("Kemayoran Jakarta 10630", 555f, 75f, textAddress)
-        canvas.drawText("Indonesia", 555f, 90f, textAddress)
-        canvas.drawText("+6221-39719888", 555f, 105f, textAddress)
+        canvas.drawText("Citra Tower, Lv. 20. Unit A", 495f, 70f, textAddress)
+        canvas.drawText("Kemayoran Jakarta 10630", 495f, 80f, textAddress)
+        canvas.drawText("Indonesia", 495f, 90f, textAddress)
+        canvas.drawText("+6221-39719888", 495f, 100f, textAddress)
 
         val linePaint = Paint().apply {
             color = ContextCompat.getColor(this@InvoiceActivity, R.color.line)
             strokeWidth = 4f
         }
 
-        canvas.drawLine(130f, 110f, 555f, 110f, linePaint)
+        canvas.drawLine(190f, 110f, 495f, 110f, linePaint)
 
         val invoice = Paint().apply {
             textSize = 12f
@@ -154,7 +154,7 @@ class InvoiceActivity : AppCompatActivity() {
             textAlign = Paint.Align.CENTER
         }
 
-        canvas.drawText("INV.", 280f, 160f, invoiceNum)
+        canvas.drawText("INV.", 280f, 155f, invoiceNum)
 
         val normalText = Paint().apply {
             textSize = 10f
@@ -165,17 +165,17 @@ class InvoiceActivity : AppCompatActivity() {
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
-        canvas.drawText("Kepada Yth.", 40f, 200f, normalText)
-        canvas.drawText("PT.HADJI KALLA", 40f, 220f, boldText)
-        canvas.drawText("Wisma Kalla Lt.12", 40f, 240f, normalText)
-        canvas.drawText("Makassar", 40f, 260f, normalText)
+        canvas.drawText("Kepada Yth.", 100f, 180f, normalText)
+        canvas.drawText("PT.HADJI KALLA", 100f, 195f, boldText)
+        canvas.drawText("Wisma Kalla Lt.12", 100f, 210f, normalText)
+        canvas.drawText("Makassar", 100f, 225f, normalText)
 
-        canvas.drawText("Tanggal", 380f, 200f, normalText)
-        canvas.drawText(":", 460f, 200f, normalText)
-        canvas.drawText(formattedDate, 475f, 200f, normalText)
-        canvas.drawText("Mata Uang", 380f, 220f, normalText)
-        canvas.drawText(":", 460f, 220f, normalText)
-        canvas.drawText("IDR", 475f, 220f, normalText)
+        canvas.drawText("Tanggal", 380f, 180f, normalText)
+        canvas.drawText(":", 430f, 180f, normalText)
+        canvas.drawText(formattedDate, 440f, 180f, normalText)
+        canvas.drawText("Mata Uang", 380f, 195f, normalText)
+        canvas.drawText(":", 430f, 195f, normalText)
+        canvas.drawText("IDR", 440f, 195f, normalText)
 
         val tablePaint = Paint().apply {
             style = Paint.Style.STROKE
@@ -187,11 +187,11 @@ class InvoiceActivity : AppCompatActivity() {
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
-        val colNo = 40f
-        val colFrame = 70f
-        val colItem = 190f
-        val colPrice = 440f
-        var y = 300f
+        val colNo = 100f
+        val colFrame = 130f
+        val colItem = 250f
+        val colPrice = 420f
+        var y = 260f
 
         canvas.drawText("No.", colNo, y, headerTable)
         canvas.drawText("Nomor Rangka", colFrame, y, headerTable)
@@ -199,7 +199,7 @@ class InvoiceActivity : AppCompatActivity() {
         canvas.drawText("Harga Satuan", colPrice, y, headerTable)
 
         y += 10f
-        canvas.drawLine(40f, y, 555f, y, tablePaint)
+        canvas.drawLine(100f, y, 495f, y, tablePaint)
 
         y += 15f
 
@@ -243,7 +243,7 @@ class InvoiceActivity : AppCompatActivity() {
 
         y -= 10f
 
-        canvas.drawLine(40f, y, 555f, y, tablePaint)
+        canvas.drawLine(100f, y, 495f, y, tablePaint)
 
         y += 15f
 
