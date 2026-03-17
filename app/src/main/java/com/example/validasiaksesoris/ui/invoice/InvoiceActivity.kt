@@ -191,13 +191,13 @@ class InvoiceActivity : AppCompatActivity() {
         val colNo = 100f
         val colFrame = 130f
         val colItem = 250f
-        val colPrice = 420f
+        val colPrice = 495f
         var y = 260f
 
-        canvas.drawText("No.", colNo, y, headerTable)
-        canvas.drawText("Nomor Rangka", colFrame, y, headerTable)
-        canvas.drawText("Uraian", colItem, y, headerTable)
-        canvas.drawText("Harga Satuan", colPrice, y, headerTable)
+        canvas.drawText("No.", 105f, y, headerTable)
+        canvas.drawText("Nomor Rangka", 140f, y, headerTable)
+        canvas.drawText("Aksesoris", 290f, y, headerTable)
+        canvas.drawText("Harga Satuan", 420f, y, headerTable)
 
         y += 10f
         canvas.drawLine(100f, y, 495f, y, tablePaint)
@@ -212,7 +212,10 @@ class InvoiceActivity : AppCompatActivity() {
         var grandTotal = 0
 
         val format = NumberFormat.getInstance(Locale("in", "ID"))
-
+        val priceText = Paint().apply {
+            textSize = 8f
+            textAlign = Paint.Align.RIGHT
+        }
 
         invoices.forEach { frame ->
             var totalFrame = 0
@@ -225,7 +228,7 @@ class InvoiceActivity : AppCompatActivity() {
                 canvas.drawText(if (firstItem) frame.frameNumber else "", colFrame, y, tableText)
 
                 canvas.drawText(item.name, colItem, y, tableText)
-                canvas.drawText(format.format(item.price), colPrice, y, tableText)
+                canvas.drawText(format.format(item.price), colPrice, y, priceText)
 
                 y += 15f
                 firstItem = false
@@ -236,10 +239,16 @@ class InvoiceActivity : AppCompatActivity() {
             val subtotal = Paint().apply {
                 textSize = 8f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-
             }
+
+            val subtotalPrice = Paint().apply {
+                textSize = 8f
+                textAlign = Paint.Align.RIGHT
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            }
+
             canvas.drawText("Subtotal", colItem, y, subtotal)
-            canvas.drawText(format.format(totalFrame), colPrice, y, subtotal)
+            canvas.drawText(format.format(totalFrame), colPrice, y, subtotalPrice)
 
             y += 20f
             no++
@@ -256,8 +265,14 @@ class InvoiceActivity : AppCompatActivity() {
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
+        val totalPrice = Paint().apply {
+            textSize = 10f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.RIGHT
+        }
+
         canvas.drawText("Total", colItem, y, totalPaint)
-        canvas.drawText(format.format(grandTotal), colPrice, y, totalPaint)
+        canvas.drawText(format.format(grandTotal), colPrice, y, totalPrice)
 
         pdfDocument.finishPage(page)
         val file = File(
