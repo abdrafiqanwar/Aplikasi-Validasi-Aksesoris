@@ -21,6 +21,7 @@ import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
 import java.io.File
 import java.io.FileOutputStream
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -210,6 +211,9 @@ class InvoiceActivity : AppCompatActivity() {
         var no = 1
         var grandTotal = 0
 
+        val format = NumberFormat.getInstance(Locale("in", "ID"))
+
+
         invoices.forEach { frame ->
             var totalFrame = 0
             var firstItem = true
@@ -221,7 +225,7 @@ class InvoiceActivity : AppCompatActivity() {
                 canvas.drawText(if (firstItem) frame.frameNumber else "", colFrame, y, tableText)
 
                 canvas.drawText(item.name, colItem, y, tableText)
-                canvas.drawText(item.price.toString(), colPrice, y, tableText)
+                canvas.drawText(format.format(item.price), colPrice, y, tableText)
 
                 y += 15f
                 firstItem = false
@@ -235,7 +239,7 @@ class InvoiceActivity : AppCompatActivity() {
 
             }
             canvas.drawText("Subtotal", colItem, y, subtotal)
-            canvas.drawText(totalFrame.toString(), colPrice, y, subtotal)
+            canvas.drawText(format.format(totalFrame), colPrice, y, subtotal)
 
             y += 20f
             no++
@@ -253,7 +257,7 @@ class InvoiceActivity : AppCompatActivity() {
         }
 
         canvas.drawText("Total", colItem, y, totalPaint)
-        canvas.drawText(grandTotal.toString(), colPrice, y, totalPaint)
+        canvas.drawText(format.format(grandTotal), colPrice, y, totalPaint)
 
         pdfDocument.finishPage(page)
         val file = File(
