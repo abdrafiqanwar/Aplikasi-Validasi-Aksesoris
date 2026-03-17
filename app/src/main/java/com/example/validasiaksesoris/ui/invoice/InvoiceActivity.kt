@@ -19,6 +19,7 @@ import com.example.validasiaksesoris.data.model.invoice.InvoiceResponse
 import com.example.validasiaksesoris.databinding.ActivityInvoiceBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import java.io.FileOutputStream
 import java.text.NumberFormat
@@ -281,11 +282,40 @@ class InvoiceActivity : AppCompatActivity() {
         )
         try {
             pdfDocument.writeTo(FileOutputStream(file))
-            // Show success message
+            showAlert("Invoice berhasil dibuat", AlertType.SUCCESS)
         } catch (e: Exception) {
             e.printStackTrace()
-            // Handle error
+            showAlert("Invoice gagal dibuat", AlertType.ERROR)
         }
         pdfDocument.close()
+    }
+
+    private fun showAlert(message: String, type: AlertType) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(
+                when (type) {
+                    AlertType.SUCCESS -> "Berhasil"
+                    AlertType.ERROR -> "Gagal"
+                }
+            )
+            .setMessage(message)
+            .setIcon(
+                when (type) {
+                    AlertType.SUCCESS -> R.drawable.ic_success
+                    AlertType.ERROR -> R.drawable.ic_error
+                }
+            )
+            .setPositiveButton("OK") { dialog , _ ->
+                when (type) {
+                    AlertType.SUCCESS -> finish()
+                    AlertType.ERROR -> dialog.dismiss()
+                }
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    enum class AlertType {
+        SUCCESS, ERROR
     }
 }
