@@ -18,6 +18,18 @@
         android:roundIcon="@drawable/ic_kt"
         android:supportsRtl="true"
         android:theme="@style/Theme.ValidasiAksesoris">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
         <activity
             android:name=".ui.invoice.InvoiceActivity"
             android:exported="false" />

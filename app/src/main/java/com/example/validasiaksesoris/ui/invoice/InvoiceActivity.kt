@@ -1,10 +1,12 @@
 package com.example.validasiaksesoris.ui.invoice
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
@@ -12,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.validasiaksesoris.R
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
@@ -278,19 +281,19 @@ class InvoiceActivity : AppCompatActivity() {
         pdfDocument.finishPage(page)
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "invoice.pdf"
+            "invoice ${formattedDate}.pdf"
         )
         try {
             pdfDocument.writeTo(FileOutputStream(file))
-            showAlert("Invoice berhasil dibuat", AlertType.SUCCESS)
+            showAlert("Invoice berhasil dibuat", AlertType.SUCCESS, file)
         } catch (e: Exception) {
             e.printStackTrace()
-            showAlert("Invoice gagal dibuat", AlertType.ERROR)
+            showAlert("Invoice gagal dibuat", AlertType.ERROR, file)
         }
         pdfDocument.close()
     }
 
-    private fun showAlert(message: String, type: AlertType) {
+    private fun showAlert(message: String, type: AlertType, file: File) {
         MaterialAlertDialogBuilder(this)
             .setTitle(
                 when (type) {
@@ -307,7 +310,10 @@ class InvoiceActivity : AppCompatActivity() {
             )
             .setPositiveButton("OK") { dialog , _ ->
                 when (type) {
-                    AlertType.SUCCESS -> finish()
+                    AlertType.SUCCESS -> {
+                        openPdf(file)
+                        finish()
+                    }
                     AlertType.ERROR -> dialog.dismiss()
                 }
             }
@@ -317,5 +323,18 @@ class InvoiceActivity : AppCompatActivity() {
 
     enum class AlertType {
         SUCCESS, ERROR
+    }
+
+    fun openPdf(file: File) {
+        val uri: Uri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.provider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, "application/pdf")
+        intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_GRANT_READ_URI_PERMISSION
+        startActivity(intent)
     }
 }
