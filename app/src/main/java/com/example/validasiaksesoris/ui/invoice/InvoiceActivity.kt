@@ -127,6 +127,7 @@ class InvoiceActivity : AppCompatActivity() {
         binding.btnSubmit.visibility = if (show) View.GONE else View.VISIBLE
         binding.tvTitle.visibility = if (show) View.GONE else View.VISIBLE
         binding.rvFrameNumber.visibility = if (show) View.GONE else View.VISIBLE
+        binding.etSearch.visibility = if (show) View.GONE else View.VISIBLE
         binding.pb.visibility = if (show) View.VISIBLE else View.GONE
     }
 
