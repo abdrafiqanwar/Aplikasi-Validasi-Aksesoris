@@ -45,6 +45,7 @@ class InvoiceActivity : AppCompatActivity() {
 
         binding.rvFrameNumber.layoutManager = LinearLayoutManager(this)
         val data = mutableListOf<FrameNumber>()
+        val originalData = mutableListOf<FrameNumber>()
 
         viewModel.getData().observe(this) {
             if (it != null) {
@@ -52,14 +53,21 @@ class InvoiceActivity : AppCompatActivity() {
                     is Result.Loading -> { showLoading(true) }
                     is Result.Success -> {
                         showLoading(false)
+
                         data.clear()
-                        data.addAll(it.data.filter { !it.frameNumber.isNullOrEmpty() })
-                        adapter = InvoiceAdapter(data) {
+                        originalData.clear()
+
+                        val filtered = it.data.filter { !it.frameNumber.isNullOrEmpty() }
+
+                        data.addAll(filtered)
+                        originalData.addAll(filtered)
+
+                        adapter = InvoiceAdapter(data) { position ->
                             val selectedCount = data.count{ it.isSelected }
 
                             if (selectedCount > 20) {
-                                data[it].isSelected = false
-                                adapter.notifyItemChanged(it)
+                                data[position].isSelected = false
+                                adapter.notifyItemChanged(position)
 
                                 Toast.makeText(this, "Maksimal 20 nomor rangka", Toast.LENGTH_SHORT).show()
                                 return@InvoiceAdapter
@@ -72,6 +80,22 @@ class InvoiceActivity : AppCompatActivity() {
                     is Result.Error -> { showLoading(false) }
                 }
             }
+        }
+
+        binding.etSearch.addTextChangedListener { text ->
+            val query = text.toString().lowercase()
+
+            val filteredList = if (query.isEmpty()) {
+                originalData
+            } else {
+                originalData.filter {
+                    it.frameNumber?.lowercase()?.contains(query) == true
+                }
+            }
+
+            data.clear()
+            data.addAll(filteredList)
+            adapter.notifyDataSetChanged()
         }
 
         binding.btnSubmit.setOnClickListener {
