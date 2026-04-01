@@ -85,19 +85,17 @@ class InvoiceActivity : AppCompatActivity() {
         }
 
         binding.etSearch.addTextChangedListener { text ->
-            val query = text.toString().lowercase()
+            val query = text.toString()
 
             val filteredList = if (query.isEmpty()) {
-                originalData
+                currentList
             } else {
-                originalData.filter {
-                    it.frameNumber?.lowercase()?.contains(query) == true
+                currentList.filter {
+                    it.frameNumber.contains(query, ignoreCase = true)
                 }
             }
 
-            data.clear()
-            data.addAll(filteredList)
-            adapter.notifyDataSetChanged()
+            adapter?.submitList(filteredList)
         }
 
         binding.btnSubmit.setOnClickListener {
