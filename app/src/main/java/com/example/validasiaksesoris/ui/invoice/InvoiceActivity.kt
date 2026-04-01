@@ -15,10 +15,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.validasiaksesoris.R
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
-import com.example.validasiaksesoris.data.model.invoice.InvoiceResponse
 import com.example.validasiaksesoris.databinding.ActivityInvoiceBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
@@ -33,7 +33,8 @@ import java.util.Locale
 class InvoiceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityInvoiceBinding
-    private lateinit var adapter: InvoiceAdapter
+    private var adapter: InvoiceAdapter? = null
+    private var currentList = listOf<FrameNumber>()
     private val viewModel by viewModels<InvoiceViewModel> {
         ViewModelFactory.getInstance()
     }
@@ -44,38 +45,39 @@ class InvoiceActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.rvFrameNumber.layoutManager = LinearLayoutManager(this)
-        val data = mutableListOf<FrameNumber>()
-        val originalData = mutableListOf<FrameNumber>()
 
-        viewModel.getData().observe(this) {
-            if (it != null) {
-                when (it) {
+        viewModel.getData().observe(this) { result ->
+            if (result != null) {
+                when (result) {
                     is Result.Loading -> { showLoading(true) }
                     is Result.Success -> {
                         showLoading(false)
 
-                        data.clear()
-                        originalData.clear()
+                        val filtered = result.data
+                            .filter { it.frameNumber.isNotEmpty() }
 
-                        val filtered = it.data.filter { !it.frameNumber.isNullOrEmpty() }
+                        currentList = filtered
 
-                        data.addAll(filtered)
-                        originalData.addAll(filtered)
+                        if (adapter == null) {
+                            adapter = InvoiceAdapter { item ->
+                                val selectedCount = currentList.count { it.isSelected }
 
-                        adapter = InvoiceAdapter(data) { position ->
-                            val selectedCount = data.count{ it.isSelected }
+                                if (selectedCount >= 21) {
+                                    currentList[item].isSelected = false
+                                    adapter?.notifyItemChanged(item)
+                                    Toast.makeText(this, "Maksimal 20 nomor rangka", Toast.LENGTH_SHORT).show()
+                                    return@InvoiceAdapter
+                                }
 
-                            if (selectedCount > 20) {
-                                data[position].isSelected = false
-                                adapter.notifyItemChanged(position)
+                                adapter?.submitList(currentList)
 
-                                Toast.makeText(this, "Maksimal 20 nomor rangka", Toast.LENGTH_SHORT).show()
-                                return@InvoiceAdapter
+                                binding.btnSubmit.isEnabled = selectedCount > 0
                             }
 
-                            binding.btnSubmit.isEnabled = selectedCount > 0
+                            binding.rvFrameNumber.adapter = adapter
                         }
-                        binding.rvFrameNumber.adapter = adapter
+
+                        adapter?.submitList(currentList)
                     }
                     is Result.Error -> { showLoading(false) }
                 }
