@@ -143,14 +143,6 @@ class InvoiceActivity : AppCompatActivity() {
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             "invoice ${formattedDate}.pdf"
         )
-        try {
-            pdfDocument.writeTo(FileOutputStream(file))
-            showAlert("Invoice berhasil dibuat", AlertType.SUCCESS, file)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            showAlert("Invoice gagal dibuat", AlertType.ERROR, file)
-        }
-        pdfDocument.close()
 
         val writer = PdfWriter(file)
         val pdfDoc = PdfDocument(writer)
