@@ -30,6 +30,7 @@ import com.itextpdf.layout.element.Image
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.VerticalAlignment
 import java.io.File
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -138,6 +139,7 @@ class InvoiceActivity : AppCompatActivity() {
     private fun createPdf(invoices: List<InvoiceResponse>) {
         val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
         val formattedDate = sdf.format(Date())
+        val numberFormat = NumberFormat.getNumberInstance(Locale("in", "ID"))
 
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
@@ -186,14 +188,14 @@ class InvoiceActivity : AppCompatActivity() {
                 table.addCell(Cell().add(Paragraph(acc.name)
                     .setFontSize(8f)
                 ))
-                table.addCell(Cell().add(Paragraph(acc.price.toString())
+                table.addCell(Cell().add(Paragraph(numberFormat.format(acc.price))
                     .setFontSize(8f)
                 ))
 
                 if (first) {
                     table.addCell(Cell(size, 1)
                         .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                        .add(Paragraph(item.total.toString())
+                        .add(Paragraph(numberFormat.format(item.total))
                             .setFontSize(8f)))
                     first = false
                 }

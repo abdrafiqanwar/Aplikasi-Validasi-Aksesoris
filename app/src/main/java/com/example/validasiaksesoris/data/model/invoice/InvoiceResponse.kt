@@ -13,7 +13,7 @@ data class InvoiceResponse(
     val accessories: List<InvoiceItem>,
 
     @field:SerializedName("total")
-    val total: String,
+    val total: Int,
 
     @field:SerializedName("createdAt")
     val createdAt: String,
