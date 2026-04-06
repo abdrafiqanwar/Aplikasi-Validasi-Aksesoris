@@ -9,8 +9,12 @@ data class InvoiceResponse(
     @field:SerializedName("vehicle_model")
     val vehicleModel: String,
 
+    @field:SerializedName("accessories")
     val accessories: List<InvoiceItem>,
 
     @field:SerializedName("total")
-    val total: String
+    val total: String,
+
+    @field:SerializedName("createdAt")
+    val createdAt: String,
 )

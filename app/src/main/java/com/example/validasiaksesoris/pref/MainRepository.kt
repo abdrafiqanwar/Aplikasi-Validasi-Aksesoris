@@ -30,11 +30,11 @@ class MainRepository private constructor(
         }
     }
 
-    fun getInvoice(frames: String): LiveData<Result<List<InvoiceResponse>>> = liveData {
+    fun getDetail(frames: String): LiveData<Result<List<InvoiceResponse>>> = liveData {
         emit(Result.Loading)
 
         try {
-            val response = apiService.getInvoice(frames)
+            val response = apiService.getDetail(frames)
 
             emit(Result.Success(response))
         } catch (e: HttpException) {

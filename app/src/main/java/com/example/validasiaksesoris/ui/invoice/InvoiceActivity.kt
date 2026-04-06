@@ -1,11 +1,6 @@
 package com.example.validasiaksesoris.ui.invoice
 
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.Typeface
-import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -13,19 +8,28 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.validasiaksesoris.R
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
+import com.example.validasiaksesoris.data.model.invoice.InvoiceResponse
 import com.example.validasiaksesoris.databinding.ActivityInvoiceBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.Table
+import com.itextpdf.layout.element.Cell
+import com.itextpdf.layout.element.Paragraph
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.layout.element.Image
+import com.itextpdf.layout.properties.TextAlignment
+import com.itextpdf.layout.properties.VerticalAlignment
 import java.io.File
-import java.io.FileOutputStream
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -99,20 +103,20 @@ class InvoiceActivity : AppCompatActivity() {
         }
 
         binding.btnSubmit.setOnClickListener {
-            val frameNumberSelected = data
+            val frameNumberSelected = currentList
                 .filter { it.isSelected }
                 .map { it.frameNumber }
 
             val frameNumber = frameNumberSelected.joinToString(",")
 
-            viewModel.getInvoice(frameNumber).observe(this) {
-                if (it != null) {
-                    when (it) {
+            viewModel.getDetail(frameNumber).observe(this) { result ->
+                if (result != null) {
+                    when (result) {
                         is Result.Loading -> { showLoading(true )}
                         is Result.Success -> {
                             showLoading(false)
 
-                            val data = it.data
+                            val data = result.data
 
                             createPdf(data)
                         }
@@ -135,175 +139,6 @@ class InvoiceActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
         val formattedDate = sdf.format(Date())
 
-        val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // width, height, page number
-        val page = pdfDocument.startPage(pageInfo)
-        val canvas = page.canvas
-
-        val options = BitmapFactory.Options().apply {
-            inSampleSize = 4
-        }
-        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.logo, options)
-        val src = Rect(0, 0, bitmap.width, bitmap.height)
-        val dst = Rect(100, 40, 185, 125)
-        val paint = Paint().apply {
-            isAntiAlias = true
-            isFilterBitmap = true
-        }
-        canvas.drawBitmap(bitmap, src, dst, paint)
-
-        val textAddress = Paint().apply {
-            textSize = 8f
-            textAlign = Paint.Align.RIGHT
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        }
-
-        canvas.drawText("Citra Tower, Lv. 20. Unit A", 495f, 70f, textAddress)
-        canvas.drawText("Kemayoran Jakarta 10630", 495f, 80f, textAddress)
-        canvas.drawText("Indonesia", 495f, 90f, textAddress)
-        canvas.drawText("+6221-39719888", 495f, 100f, textAddress)
-
-        val linePaint = Paint().apply {
-            color = ContextCompat.getColor(this@InvoiceActivity, R.color.line)
-            strokeWidth = 4f
-        }
-
-        canvas.drawLine(190f, 110f, 495f, 110f, linePaint)
-
-        val invoice = Paint().apply {
-            textSize = 12f
-            textAlign = Paint.Align.CENTER
-            isUnderlineText = true
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        }
-
-        canvas.drawText("INVOICE", 300f, 140f, invoice)
-
-        val invoiceNum = Paint().apply {
-            textSize = 10f
-            textAlign = Paint.Align.CENTER
-        }
-
-        canvas.drawText("INV.", 280f, 155f, invoiceNum)
-
-        val normalText = Paint().apply {
-            textSize = 10f
-        }
-
-        val boldText = Paint().apply {
-            textSize = 10f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        }
-
-        canvas.drawText("Kepada Yth.", 100f, 180f, normalText)
-        canvas.drawText("PT.HADJI KALLA", 100f, 195f, boldText)
-        canvas.drawText("Wisma Kalla Lt.12", 100f, 210f, normalText)
-        canvas.drawText("Makassar", 100f, 225f, normalText)
-
-        canvas.drawText("Tanggal", 380f, 180f, normalText)
-        canvas.drawText(":", 430f, 180f, normalText)
-        canvas.drawText(formattedDate, 440f, 180f, normalText)
-        canvas.drawText("Mata Uang", 380f, 195f, normalText)
-        canvas.drawText(":", 430f, 195f, normalText)
-        canvas.drawText("IDR", 440f, 195f, normalText)
-
-        val tablePaint = Paint().apply {
-            style = Paint.Style.STROKE
-            strokeWidth = 1f
-        }
-
-        val headerTable = Paint().apply {
-            textSize = 10f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        }
-
-        val colNo = 100f
-        val colFrame = 130f
-        val colItem = 250f
-        val colPrice = 495f
-        var y = 260f
-
-        canvas.drawText("No.", 105f, y, headerTable)
-        canvas.drawText("Nomor Rangka", 140f, y, headerTable)
-        canvas.drawText("Aksesoris", 290f, y, headerTable)
-        canvas.drawText("Harga Satuan", 420f, y, headerTable)
-
-        y += 10f
-        canvas.drawLine(100f, y, 495f, y, tablePaint)
-
-        y += 15f
-
-        val tableText = Paint().apply {
-            textSize = 8f
-        }
-
-        var no = 1
-        var grandTotal = 0
-
-        val format = NumberFormat.getInstance(Locale("in", "ID"))
-        val priceText = Paint().apply {
-            textSize = 8f
-            textAlign = Paint.Align.RIGHT
-        }
-
-        invoices.forEach { frame ->
-            var totalFrame = 0
-            var firstItem = true
-
-            frame.accessories.forEach { item ->
-                totalFrame += item.price
-
-                canvas.drawText(if (firstItem) no.toString() else "", colNo, y, tableText)
-                canvas.drawText(if (firstItem) frame.frameNumber else "", colFrame, y, tableText)
-
-                canvas.drawText(item.name, colItem, y, tableText)
-                canvas.drawText(format.format(item.price), colPrice, y, priceText)
-
-                y += 15f
-                firstItem = false
-            }
-
-            grandTotal += totalFrame
-
-            val subtotal = Paint().apply {
-                textSize = 8f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            }
-
-            val subtotalPrice = Paint().apply {
-                textSize = 8f
-                textAlign = Paint.Align.RIGHT
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            }
-
-            canvas.drawText("Subtotal", colItem, y, subtotal)
-            canvas.drawText(format.format(totalFrame), colPrice, y, subtotalPrice)
-
-            y += 20f
-            no++
-        }
-
-        y -= 10f
-
-        canvas.drawLine(100f, y, 495f, y, tablePaint)
-
-        y += 15f
-
-        val totalPaint = Paint().apply {
-            textSize = 10f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        }
-
-        val totalPrice = Paint().apply {
-            textSize = 10f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            textAlign = Paint.Align.RIGHT
-        }
-
-        canvas.drawText("Total", colItem, y, totalPaint)
-        canvas.drawText(format.format(grandTotal), colPrice, y, totalPrice)
-
-        pdfDocument.finishPage(page)
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             "invoice ${formattedDate}.pdf"
@@ -316,6 +151,70 @@ class InvoiceActivity : AppCompatActivity() {
             showAlert("Invoice gagal dibuat", AlertType.ERROR, file)
         }
         pdfDocument.close()
+
+        val writer = PdfWriter(file)
+        val pdfDoc = PdfDocument(writer)
+        val document = Document(pdfDoc, PageSize.A4)
+        document.setMargins(50f, 80f, 50f, 80f)
+
+        val table = Table(floatArrayOf(1f, 4f, 4f, 6f, 3f, 3f)).useAllAvailableWidth()
+
+        listOf("No", "Nomor Rangka", "Model", "Aksesoris", "Harga", "Total")
+            .forEach {
+                table.addHeaderCell(Cell().add(Paragraph(it)
+                    .setFontSize(10f)
+                    .setBold()))
+                    .setTextAlignment(TextAlignment.CENTER)
+            }
+
+        var no = 1
+
+        invoices.forEach { item ->
+            val size = item.accessories.size
+
+            table.addCell(Cell(size, 1)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .add(Paragraph(no.toString())
+                .setFontSize(8f)
+            ))
+            table.addCell(Cell(size, 1)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .add(Paragraph(item.frameNumber)
+                .setFontSize(8f)
+            ))
+            table.addCell(Cell(size, 1)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                .add(Paragraph(item.vehicleModel)
+                .setFontSize(8f)
+            ))
+
+            var first = true
+
+            item.accessories.forEach { acc ->
+                table.addCell(Cell().add(Paragraph(acc.name)
+                    .setFontSize(8f)
+                ))
+                table.addCell(Cell().add(Paragraph(acc.price.toString())
+                    .setFontSize(8f)
+                ))
+
+                if (first) {
+                    table.addCell(Cell(size, 1)
+                        .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                        .add(Paragraph(item.total.toString())
+                            .setFontSize(8f)))
+                    first = false
+                }
+            }
+
+            no++
+        }
+
+        document.add(table)
+
+        document.close()
+
+        showAlert("Invoice berhasil dibuat", AlertType.SUCCESS, file)
     }
 
     private fun showAlert(message: String, type: AlertType, file: File) {
@@ -337,6 +236,7 @@ class InvoiceActivity : AppCompatActivity() {
                 when (type) {
                     AlertType.SUCCESS -> {
                         openPdf(file)
+                        dialog.dismiss()
                         finish()
                     }
                     AlertType.ERROR -> dialog.dismiss()

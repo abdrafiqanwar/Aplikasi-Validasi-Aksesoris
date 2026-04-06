@@ -15,7 +15,7 @@ interface ApiService {
     suspend fun getData(): List<FrameNumber>
 
     @GET("exec")
-    suspend fun getInvoice(
+    suspend fun getDetail(
         @Query("frames") frames: String
     ): List<InvoiceResponse>
 

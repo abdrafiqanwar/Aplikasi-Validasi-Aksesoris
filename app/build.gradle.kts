@@ -69,4 +69,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
     implementation(libs.material.v1110)
+
+    implementation(libs.itext7.core)
 }
