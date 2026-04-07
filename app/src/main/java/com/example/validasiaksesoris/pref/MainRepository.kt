@@ -5,7 +5,8 @@ import androidx.lifecycle.liveData
 import com.example.validasiaksesoris.data.model.ErrorResponse
 import com.example.validasiaksesoris.data.model.accessory.AccessoryRequest
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
-import com.example.validasiaksesoris.data.model.invoice.InvoiceResponse
+import com.example.validasiaksesoris.data.model.invoice.DetailResponse
+import com.example.validasiaksesoris.data.model.invoice.SummaryResponse
 import com.example.validasiaksesoris.data.retrofit.ApiService
 import com.example.validasiaksesoris.di.Result
 import com.google.gson.Gson
@@ -30,7 +31,23 @@ class MainRepository private constructor(
         }
     }
 
-    fun getDetail(frames: String): LiveData<Result<List<InvoiceResponse>>> = liveData {
+    fun getSummary(sheet: String): LiveData<Result<List<SummaryResponse>>> = liveData {
+        emit(Result.Loading)
+
+        try {
+            val response = apiService.getSummary(sheet)
+
+            emit(Result.Success(response))
+        } catch (e: HttpException) {
+            val jsonInString = e.response()?.errorBody()?.string()
+            val errorBody = Gson().fromJson(jsonInString, ErrorResponse::class.java)
+            val errorMessage = errorBody.message
+
+            emit(Result.Error(errorMessage))
+        }
+    }
+
+    fun getDetail(frames: String): LiveData<Result<List<DetailResponse>>> = liveData {
         emit(Result.Loading)
 
         try {

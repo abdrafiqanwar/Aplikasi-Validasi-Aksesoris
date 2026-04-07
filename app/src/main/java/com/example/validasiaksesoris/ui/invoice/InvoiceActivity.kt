@@ -13,7 +13,8 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.validasiaksesoris.R
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
-import com.example.validasiaksesoris.data.model.invoice.InvoiceResponse
+import com.example.validasiaksesoris.data.model.invoice.DetailResponse
+import com.example.validasiaksesoris.data.model.invoice.SummaryResponse
 import com.example.validasiaksesoris.databinding.ActivityInvoiceBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
@@ -26,6 +27,9 @@ import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.element.Cell
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.layout.borders.Border
+import com.itextpdf.layout.borders.SolidBorder
+import com.itextpdf.layout.element.AreaBreak
 import com.itextpdf.layout.element.Image
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.VerticalAlignment
@@ -41,6 +45,7 @@ class InvoiceActivity : AppCompatActivity() {
     private var adapter: InvoiceAdapter? = null
     private var currentList = listOf<FrameNumber>()
     private var detailData = listOf<DetailResponse>()
+    private var summaryData = listOf<SummaryResponse>()
     private val viewModel by viewModels<InvoiceViewModel> {
         ViewModelFactory.getInstance()
     }
@@ -90,6 +95,20 @@ class InvoiceActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.getSummary("Summary").observe(this) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> { showLoading(true) }
+                    is Result.Success -> {
+                        showLoading(false)
+
+                        summaryData = result.data
+                    }
+                    is Result.Error -> { showLoading(false) }
+                }
+            }
+        }
+
         binding.etSearch.addTextChangedListener { text ->
             val query = text.toString()
 
@@ -120,7 +139,7 @@ class InvoiceActivity : AppCompatActivity() {
 
                             detailData = result.data
 
-                            createPdf(data)
+                            createPdf(summaryData, detailData)
                         }
                         is Result.Error -> { showLoading(false) }
                     }
@@ -137,7 +156,7 @@ class InvoiceActivity : AppCompatActivity() {
         binding.pb.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun createPdf(invoices: List<InvoiceResponse>) {
+    private fun createPdf(summary: List<SummaryResponse>, detail: List<DetailResponse>) {
         val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
         val formattedDate = sdf.format(Date())
         val numberFormat = NumberFormat.getNumberInstance(Locale("in", "ID"))
@@ -164,7 +183,7 @@ class InvoiceActivity : AppCompatActivity() {
 
         var no = 1
 
-        invoices.forEach { item ->
+        detail.forEach { item ->
             val size = item.accessories.size
 
             table.addCell(Cell(size, 1)
