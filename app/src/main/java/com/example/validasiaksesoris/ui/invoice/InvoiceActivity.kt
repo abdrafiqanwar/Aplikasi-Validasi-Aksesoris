@@ -187,12 +187,16 @@ class InvoiceActivity : AppCompatActivity() {
         )
 
         header.addCell(
-            Cell()
-                .add(Paragraph("\n\nCitra Tower, Lv. 20. Unit A\nKemayoran Jakarta 10630\nIndonesia\n+6221-39719888")
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setFontSize(8f))
-                .setBorder(Border.NO_BORDER)
-                .setTextAlignment(TextAlignment.RIGHT)
+            Cell().apply {
+                add(Paragraph("\n\n"))
+                add(Paragraph("Citra Tower, Lv. 20. Unit A"))
+                add(Paragraph("Kemayoran Jakarta 10630"))
+                add(Paragraph("Indonesia"))
+                add(Paragraph("+6221-39719888"))
+                setTextAlignment(TextAlignment.RIGHT)
+                setFontSize(8f)
+                setBorder(Border.NO_BORDER)
+            }
         )
 
         header.setBorderBottom(SolidBorder(1f))
