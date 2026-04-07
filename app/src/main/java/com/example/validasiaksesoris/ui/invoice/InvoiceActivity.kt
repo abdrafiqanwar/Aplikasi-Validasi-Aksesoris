@@ -40,6 +40,7 @@ class InvoiceActivity : AppCompatActivity() {
     private lateinit var binding: ActivityInvoiceBinding
     private var adapter: InvoiceAdapter? = null
     private var currentList = listOf<FrameNumber>()
+    private var detailData = listOf<DetailResponse>()
     private val viewModel by viewModels<InvoiceViewModel> {
         ViewModelFactory.getInstance()
     }
@@ -117,7 +118,7 @@ class InvoiceActivity : AppCompatActivity() {
                         is Result.Success -> {
                             showLoading(false)
 
-                            val data = result.data
+                            detailData = result.data
 
                             createPdf(data)
                         }

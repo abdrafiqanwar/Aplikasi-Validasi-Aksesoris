@@ -17,7 +17,7 @@ interface ApiService {
     @GET("exec")
     suspend fun getDetail(
         @Query("frames") frames: String
-    ): List<InvoiceResponse>
+    ): List<DetailResponse>
 
     @POST("exec")
     suspend fun sendData(

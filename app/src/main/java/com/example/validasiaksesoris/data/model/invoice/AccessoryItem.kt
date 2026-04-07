@@ -1,6 +1,6 @@
 package com.example.validasiaksesoris.data.model.invoice
 
-data class InvoiceItem(
+data class AccessoryItem(
     val name: String,
     val price: Int
 )

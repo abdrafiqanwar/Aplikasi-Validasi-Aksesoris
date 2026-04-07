@@ -2,7 +2,7 @@ package com.example.validasiaksesoris.data.model.invoice
 
 import com.google.gson.annotations.SerializedName
 
-data class InvoiceResponse(
+data class DetailResponse(
     @field:SerializedName("frame_number")
     val frameNumber: String,
 
@@ -10,7 +10,7 @@ data class InvoiceResponse(
     val vehicleModel: String,
 
     @field:SerializedName("accessories")
-    val accessories: List<InvoiceItem>,
+    val accessories: List<AccessoryItem>,
 
     @field:SerializedName("total")
     val total: Int,
