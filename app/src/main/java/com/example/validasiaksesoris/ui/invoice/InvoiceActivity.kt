@@ -200,6 +200,22 @@ class InvoiceActivity : AppCompatActivity() {
 
         document.add(header)
 
+        document.add(
+            Paragraph("INVOICE")
+                .setBold()
+                .setUnderline()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(12f)
+        )
+
+        document.add(
+            Paragraph("INV.")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginLeft(-50f)
+                .setMarginTop(-5f)
+                .setFontSize(10f)
+        )
+
         document.add(AreaBreak())
 
         val table = Table(floatArrayOf(1f, 4f, 4f, 6f, 3f, 3f)).useAllAvailableWidth()
