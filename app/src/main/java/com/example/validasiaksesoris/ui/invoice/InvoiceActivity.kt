@@ -171,6 +171,37 @@ class InvoiceActivity : AppCompatActivity() {
         val document = Document(pdfDoc, PageSize.A4)
         document.setMargins(50f, 80f, 50f, 80f)
 
+        val inputStream = resources.openRawResource(R.drawable.logo)
+        val bytes = inputStream.readBytes()
+
+        val imageData = ImageDataFactory.create(bytes)
+        val image = Image(imageData).scaleToFit(80f, 80f)
+
+        val header = Table(floatArrayOf(1f, 3f)).useAllAvailableWidth()
+
+        header.addCell(
+            Cell()
+                .add(image)
+                .setBorder(Border.NO_BORDER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+        )
+
+        header.addCell(
+            Cell()
+                .add(Paragraph("\n\nCitra Tower, Lv. 20. Unit A\nKemayoran Jakarta 10630\nIndonesia\n+6221-39719888")
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setFontSize(8f))
+                .setBorder(Border.NO_BORDER)
+                .setTextAlignment(TextAlignment.RIGHT)
+        )
+
+        header.setBorderBottom(SolidBorder(1f))
+        header.setMarginBottom(16f)
+
+        document.add(header)
+
+        document.add(AreaBreak())
+
         val table = Table(floatArrayOf(1f, 4f, 4f, 6f, 3f, 3f)).useAllAvailableWidth()
 
         listOf("No", "Nomor Rangka", "Model", "Aksesoris", "Harga", "Total")
