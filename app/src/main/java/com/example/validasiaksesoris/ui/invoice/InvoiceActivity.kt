@@ -31,7 +31,10 @@ import com.itextpdf.layout.borders.Border
 import com.itextpdf.layout.borders.SolidBorder
 import com.itextpdf.layout.element.AreaBreak
 import com.itextpdf.layout.element.Image
+import com.itextpdf.layout.element.TabStop
+import com.itextpdf.layout.properties.TabAlignment
 import com.itextpdf.layout.properties.TextAlignment
+import com.itextpdf.layout.properties.UnitValue
 import com.itextpdf.layout.properties.VerticalAlignment
 import java.io.File
 import java.text.NumberFormat
@@ -177,7 +180,7 @@ class InvoiceActivity : AppCompatActivity() {
         val imageData = ImageDataFactory.create(bytes)
         val image = Image(imageData).scaleToFit(80f, 80f)
 
-        val header = Table(floatArrayOf(1f, 3f)).useAllAvailableWidth()
+        val header = Table(floatArrayOf(1f, 1f)).useAllAvailableWidth()
 
         header.addCell(
             Cell()
@@ -219,6 +222,35 @@ class InvoiceActivity : AppCompatActivity() {
                 .setMarginTop(-5f)
                 .setFontSize(10f)
         )
+
+        val subTable = Table(floatArrayOf(1f, 1f)).useAllAvailableWidth()
+
+        subTable.setMarginTop(10f)
+
+        subTable.addCell(
+            Cell().apply {
+                add(Paragraph("Kepada Yth."))
+                add(Paragraph("PT.HADJI KALLA").setBold())
+                add(Paragraph("Wisma Kalla Lt.12"))
+                add(Paragraph("Makassar"))
+
+                setBorder(Border.NO_BORDER)
+                setFontSize(8f)
+                setPaddingRight(150f)
+            }
+        )
+
+        subTable.addCell(
+            Cell().apply {
+                add(Paragraph("Tanggal \t\t : $formattedDate"))
+                add(Paragraph("Mata Uang \t : IDR"))
+
+                setBorder(Border.NO_BORDER)
+                setFontSize(8f)
+            }
+        )
+
+        document.add(subTable)
 
         document.add(AreaBreak())
 
