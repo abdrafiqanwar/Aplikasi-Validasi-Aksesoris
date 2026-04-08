@@ -254,7 +254,7 @@ class InvoiceActivity : AppCompatActivity() {
 
         document.add(AreaBreak())
 
-        val table = Table(floatArrayOf(1f, 4f, 4f, 6f, 3f, 3f)).useAllAvailableWidth()
+        val table = Table(6).useAllAvailableWidth()
 
         listOf("No", "Nomor Rangka", "Model", "Aksesoris", "Harga", "Total")
             .forEach {
@@ -290,16 +290,23 @@ class InvoiceActivity : AppCompatActivity() {
             item.accessories.forEach { acc ->
                 table.addCell(Cell().add(Paragraph(acc.name)
                     .setFontSize(8f)
+                    .setTextAlignment(TextAlignment.LEFT)
                 ))
                 table.addCell(Cell().add(Paragraph(numberFormat.format(acc.price))
                     .setFontSize(8f)
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setPaddingLeft(10f)
+                    .setPaddingRight(5f)
                 ))
 
                 if (first) {
                     table.addCell(Cell(size, 1)
                         .setVerticalAlignment(VerticalAlignment.MIDDLE)
                         .add(Paragraph(numberFormat.format(item.total))
-                            .setFontSize(8f)))
+                            .setFontSize(8f)
+                            .setPaddingRight(5f)
+                            .setPaddingLeft(5f)
+                        ))
                     first = false
                 }
             }
