@@ -142,7 +142,7 @@ class InvoiceActivity : AppCompatActivity() {
 
                             detailData = result.data
 
-                            createPdf(summaryData, detailData)
+                            generateInvoicePdf(summaryData, detailData)
                         }
                         is Result.Error -> { showLoading(false) }
                     }
@@ -159,7 +159,7 @@ class InvoiceActivity : AppCompatActivity() {
         binding.pb.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun createPdf(summaryData: List<SummaryResponse>, detailData: List<DetailResponse>) {
+    private fun generateInvoicePdf(summaryData: List<SummaryResponse>, detailData: List<DetailResponse>) {
         val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
         val formattedDate = sdf.format(Date())
         val numberFormat = NumberFormat.getNumberInstance(Locale("in", "ID"))
