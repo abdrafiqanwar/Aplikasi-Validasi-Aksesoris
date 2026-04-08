@@ -159,7 +159,7 @@ class InvoiceActivity : AppCompatActivity() {
         binding.pb.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun createPdf(summary: List<SummaryResponse>, detail: List<DetailResponse>) {
+    private fun createPdf(summaryData: List<SummaryResponse>, detailData: List<DetailResponse>) {
         val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
         val formattedDate = sdf.format(Date())
         val numberFormat = NumberFormat.getNumberInstance(Locale("in", "ID"))
@@ -254,67 +254,67 @@ class InvoiceActivity : AppCompatActivity() {
 
         document.add(AreaBreak())
 
-        val table = Table(6).useAllAvailableWidth()
+        val detailTable = Table(6).useAllAvailableWidth()
 
         listOf("No", "Nomor Rangka", "Model", "Aksesoris", "Harga", "Total")
             .forEach {
-                table.addHeaderCell(Cell().add(Paragraph(it)
+                detailTable.addHeaderCell(Cell().add(Paragraph(it)
                     .setFontSize(10f)
                     .setBold()))
                     .setTextAlignment(TextAlignment.CENTER)
             }
 
-        var no = 1
+        var detailNumber = 1
 
-        detail.forEach { item ->
+        detailData.forEach { item ->
             val size = item.accessories.size
 
-            table.addCell(Cell(size, 1)
+            detailTable.addCell(Cell(size, 1)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                .add(Paragraph(no.toString())
+                .add(Paragraph(detailNumber.toString())
                 .setFontSize(8f)
             ))
-            table.addCell(Cell(size, 1)
+            detailTable.addCell(Cell(size, 1)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .add(Paragraph(item.frameNumber)
                 .setFontSize(8f)
             ))
-            table.addCell(Cell(size, 1)
+            detailTable.addCell(Cell(size, 1)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .add(Paragraph(item.vehicleModel)
                 .setFontSize(8f)
             ))
 
-            var first = true
+            var detailFirst = true
 
             item.accessories.forEach { acc ->
-                table.addCell(Cell().add(Paragraph(acc.name)
+                detailTable.addCell(Cell().add(Paragraph(acc.name)
                     .setFontSize(8f)
                     .setTextAlignment(TextAlignment.LEFT)
                 ))
-                table.addCell(Cell().add(Paragraph(numberFormat.format(acc.price))
+                detailTable.addCell(Cell().add(Paragraph(numberFormat.format(acc.price))
                     .setFontSize(8f)
                     .setTextAlignment(TextAlignment.RIGHT)
                     .setPaddingLeft(10f)
                     .setPaddingRight(5f)
                 ))
 
-                if (first) {
-                    table.addCell(Cell(size, 1)
+                if (detailFirst) {
+                    detailTable.addCell(Cell(size, 1)
                         .setVerticalAlignment(VerticalAlignment.MIDDLE)
                         .add(Paragraph(numberFormat.format(item.total))
                             .setFontSize(8f)
                             .setPaddingRight(5f)
                             .setPaddingLeft(5f)
                         ))
-                    first = false
+                    detailFirst = false
                 }
             }
 
-            no++
+            detailNumber++
         }
 
-        document.add(table)
+        document.add(detailTable)
 
         document.close()
 
