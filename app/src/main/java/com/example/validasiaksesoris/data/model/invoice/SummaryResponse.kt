@@ -9,9 +9,9 @@ data class SummaryResponse(
     @field:SerializedName("qty")
     val qty: Int,
 
-    @field:SerializedName("price")
-    val price: Int,
+    @field:SerializedName("harga_satuan")
+    val harga_satuan: Int,
 
-    @field:SerializedName("total")
-    val total: Int
+    @field:SerializedName("jumlah")
+    val jumlah: Int
 )
