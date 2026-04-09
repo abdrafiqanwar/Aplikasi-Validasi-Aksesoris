@@ -203,7 +203,7 @@ class InvoiceActivity : AppCompatActivity() {
         )
 
         header.setBorderBottom(SolidBorder(1f))
-        header.setMarginBottom(16f)
+        header.setMarginBottom(10f)
 
         document.add(header)
 
@@ -212,15 +212,15 @@ class InvoiceActivity : AppCompatActivity() {
                 .setBold()
                 .setUnderline()
                 .setTextAlignment(TextAlignment.CENTER)
-                .setFontSize(12f)
+                .setFontSize(8f)
         )
 
         document.add(
             Paragraph("INV.")
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginLeft(-50f)
+                .setMarginLeft(-25f)
                 .setMarginTop(-5f)
-                .setFontSize(10f)
+                .setFontSize(7f)
         )
 
         val subTable = Table(floatArrayOf(1f, 1f)).useAllAvailableWidth()
@@ -235,18 +235,18 @@ class InvoiceActivity : AppCompatActivity() {
                 add(Paragraph("Makassar"))
 
                 setBorder(Border.NO_BORDER)
-                setFontSize(8f)
+                setFontSize(7f)
                 setPaddingRight(150f)
             }
         )
 
         subTable.addCell(
             Cell().apply {
-                add(Paragraph("Tanggal \t\t : $formattedDate"))
-                add(Paragraph("Mata Uang \t : IDR"))
+                add(Paragraph("Tanggal      : $formattedDate"))
+                add(Paragraph("Mata Uang : IDR"))
 
                 setBorder(Border.NO_BORDER)
-                setFontSize(8f)
+                setFontSize(7f)
             }
         )
 
@@ -259,7 +259,7 @@ class InvoiceActivity : AppCompatActivity() {
         listOf("No", "Nomor Rangka", "Model", "Aksesoris", "Harga", "Total")
             .forEach {
                 detailTable.addHeaderCell(Cell().add(Paragraph(it)
-                    .setFontSize(10f)
+                    .setFontSize(5f)
                     .setBold()))
                     .setTextAlignment(TextAlignment.CENTER)
             }
@@ -272,30 +272,29 @@ class InvoiceActivity : AppCompatActivity() {
             detailTable.addCell(Cell(size, 1)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .add(Paragraph(detailNumber.toString())
-                .setFontSize(8f)
+                .setFontSize(5f)
             ))
             detailTable.addCell(Cell(size, 1)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .add(Paragraph(item.frameNumber)
-                .setFontSize(8f)
+                .setFontSize(5f)
             ))
             detailTable.addCell(Cell(size, 1)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .add(Paragraph(item.vehicleModel)
-                .setFontSize(8f)
+                .setFontSize(5f)
             ))
 
             var detailFirst = true
 
             item.accessories.forEach { acc ->
                 detailTable.addCell(Cell().add(Paragraph(acc.name)
-                    .setFontSize(8f)
+                    .setFontSize(5f)
                     .setTextAlignment(TextAlignment.LEFT)
                 ))
                 detailTable.addCell(Cell().add(Paragraph(numberFormat.format(acc.price))
-                    .setFontSize(8f)
+                    .setFontSize(5f)
                     .setTextAlignment(TextAlignment.RIGHT)
-                    .setPaddingLeft(10f)
                     .setPaddingRight(5f)
                 ))
 
@@ -303,9 +302,7 @@ class InvoiceActivity : AppCompatActivity() {
                     detailTable.addCell(Cell(size, 1)
                         .setVerticalAlignment(VerticalAlignment.MIDDLE)
                         .add(Paragraph(numberFormat.format(item.total))
-                            .setFontSize(8f)
-                            .setPaddingRight(5f)
-                            .setPaddingLeft(5f)
+                            .setFontSize(5f)
                         ))
                     detailFirst = false
                 }
