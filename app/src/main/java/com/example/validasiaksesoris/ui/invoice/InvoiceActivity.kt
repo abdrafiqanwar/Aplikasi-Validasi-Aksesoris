@@ -252,6 +252,56 @@ class InvoiceActivity : AppCompatActivity() {
 
         document.add(subTable)
 
+        val summaryTable = Table(5).useAllAvailableWidth()
+
+        summaryTable.setMarginTop(20f)
+
+        listOf("No", "Item", "QTY", "Harga Satuan", "Jumlah")
+            .forEach {
+                summaryTable.addHeaderCell(Cell().add(Paragraph(it)
+                    .setFontSize(5f)
+                    .setBold()))
+                    .setTextAlignment(TextAlignment.CENTER)
+            }
+
+        var summaryNumber = 1
+
+        summaryData.forEach { item ->
+            summaryTable.addCell(Cell()
+                .add(Paragraph(summaryNumber.toString())
+                .setFontSize(5f)
+            ))
+
+            summaryTable.addCell(Cell()
+                .add(Paragraph(item.item)
+                .setFontSize(5f)
+                .setTextAlignment(TextAlignment.LEFT)
+            ))
+
+            summaryTable.addCell(Cell()
+                .add(Paragraph(item.qty.toString())
+                .setFontSize(5f)
+            ))
+
+            summaryTable.addCell(Cell()
+                .add(Paragraph(numberFormat.format(item.harga_satuan))
+                .setFontSize(5f)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setPaddingRight(5f)
+            ))
+
+            summaryTable.addCell(Cell()
+                .add(Paragraph(numberFormat.format(item.jumlah))
+                .setFontSize(5f)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setPaddingRight(5f)
+            ))
+
+            summaryNumber++
+        }
+
+        document.add(summaryTable)
+
         document.add(AreaBreak())
 
         val detailTable = Table(6).useAllAvailableWidth()
