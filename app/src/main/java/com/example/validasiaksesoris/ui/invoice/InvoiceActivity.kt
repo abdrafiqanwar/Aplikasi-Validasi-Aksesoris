@@ -301,6 +301,64 @@ class InvoiceActivity : AppCompatActivity() {
             summaryNumber++
         }
 
+        val total = summaryData.sumOf { it.jumlah }
+        val ppn = total * 0.11
+        val grandTotal = total + ppn
+
+        summaryTable.addCell(Cell(1, 3)
+            .setBorder(Border.NO_BORDER)
+        )
+
+        summaryTable.addCell(Cell()
+            .add(Paragraph("Total"))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setPaddingLeft(5f)
+        )
+
+        summaryTable.addCell(Cell()
+            .add(Paragraph(numberFormat.format(total)))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setPaddingRight(7f)
+        )
+
+        summaryTable.addCell(Cell(1, 3)
+            .setBorder(Border.NO_BORDER)
+        )
+
+        summaryTable.addCell(Cell()
+            .add(Paragraph("PPN 11%"))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setPaddingLeft(5f)
+        )
+
+        summaryTable.addCell(Cell()
+            .add(Paragraph(numberFormat.format(ppn)))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setPaddingRight(7f)
+        )
+
+        summaryTable.addCell(Cell(1, 3)
+            .setBorder(Border.NO_BORDER)
+        )
+
+        summaryTable.addCell(Cell()
+            .add(Paragraph("Grand Total"))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setPaddingLeft(5f)
+        )
+
+        summaryTable.addCell(Cell()
+            .add(Paragraph(numberFormat.format(grandTotal)))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setPaddingRight(7f)
+        )
+
         document.add(summaryTable)
 
         document.add(AreaBreak())
@@ -361,6 +419,60 @@ class InvoiceActivity : AppCompatActivity() {
 
             detailNumber++
         }
+
+        detailTable.addCell(Cell(1, 4)
+            .setBorder(Border.NO_BORDER)
+        )
+
+        detailTable.addCell(Cell()
+            .add(Paragraph("Jumlah"))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setPaddingLeft(5f)
+        )
+
+        detailTable.addCell(Cell()
+            .add(Paragraph(numberFormat.format(total)))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setPaddingRight(7f)
+        )
+
+        detailTable.addCell(Cell(1, 4)
+            .setBorder(Border.NO_BORDER)
+        )
+
+        detailTable.addCell(Cell()
+            .add(Paragraph("PPN 11%"))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setPaddingLeft(5f)
+        )
+
+        detailTable.addCell(Cell()
+            .add(Paragraph(numberFormat.format(ppn)))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setPaddingRight(7f)
+        )
+
+        detailTable.addCell(Cell(1, 4)
+            .setBorder(Border.NO_BORDER)
+        )
+
+        detailTable.addCell(Cell()
+            .add(Paragraph("Net Price"))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setPaddingLeft(5f)
+        )
+
+        detailTable.addCell(Cell()
+            .add(Paragraph(numberFormat.format(grandTotal)))
+            .setFontSize(5f)
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setPaddingRight(7f)
+        )
 
         document.add(detailTable)
 
