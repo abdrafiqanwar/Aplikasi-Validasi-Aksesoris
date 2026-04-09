@@ -163,7 +163,10 @@ class InvoiceActivity : AppCompatActivity() {
     private fun generateInvoicePdf(summaryData: List<SummaryResponse>, detailData: List<DetailResponse>) {
         val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
         val formattedDate = sdf.format(Date())
-        val numberFormat = NumberFormat.getNumberInstance(Locale("in", "ID"))
+        val numberFormat = NumberFormat.getNumberInstance(Locale("in", "ID")).apply {
+            maximumFractionDigits = 0
+            minimumFractionDigits = 0
+        }
 
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
