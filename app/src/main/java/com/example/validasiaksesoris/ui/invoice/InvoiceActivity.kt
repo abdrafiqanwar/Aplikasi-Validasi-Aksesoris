@@ -31,10 +31,7 @@ import com.itextpdf.layout.borders.Border
 import com.itextpdf.layout.borders.SolidBorder
 import com.itextpdf.layout.element.AreaBreak
 import com.itextpdf.layout.element.Image
-import com.itextpdf.layout.element.TabStop
-import com.itextpdf.layout.properties.TabAlignment
 import com.itextpdf.layout.properties.TextAlignment
-import com.itextpdf.layout.properties.UnitValue
 import com.itextpdf.layout.properties.VerticalAlignment
 import java.io.File
 import java.text.NumberFormat
@@ -77,14 +74,12 @@ class InvoiceActivity : AppCompatActivity() {
                             adapter = InvoiceAdapter { item ->
                                 val selectedCount = currentList.count { it.isSelected }
 
-                                if (selectedCount >= 21) {
+                                if (selectedCount > 21) {
                                     currentList[item].isSelected = false
                                     adapter?.notifyItemChanged(item)
                                     Toast.makeText(this, "Maksimal 20 nomor rangka", Toast.LENGTH_SHORT).show()
                                     return@InvoiceAdapter
                                 }
-
-                                adapter?.submitList(currentList)
 
                                 binding.btnSubmit.isEnabled = selectedCount > 0
                             }
@@ -93,20 +88,6 @@ class InvoiceActivity : AppCompatActivity() {
                         }
 
                         adapter?.submitList(currentList)
-                    }
-                    is Result.Error -> { showLoading(false) }
-                }
-            }
-        }
-
-        viewModel.getSummary("Summary").observe(this) { result ->
-            if (result != null) {
-                when (result) {
-                    is Result.Loading -> { showLoading(true) }
-                    is Result.Success -> {
-                        showLoading(false)
-
-                        summaryData = result.data
                     }
                     is Result.Error -> { showLoading(false) }
                 }
@@ -143,7 +124,27 @@ class InvoiceActivity : AppCompatActivity() {
 
                             detailData = result.data
 
-                            generateInvoicePdf(summaryData, detailData)
+                            if (detailData.isNotEmpty()) {
+                                viewModel.getSummary("Summary").observe(this) { result ->
+                                    if (result != null) {
+                                        when (result) {
+                                            is Result.Loading -> { showLoading(true) }
+                                            is Result.Success -> {
+                                                showLoading(false)
+
+                                                summaryData = result.data
+
+                                                if (summaryData.isNotEmpty()) {
+                                                    val file = generateInvoicePdf(summaryData, detailData)
+                                                    showAlert("Invoice berhasil dibuat", AlertType.SUCCESS)
+                                                    openPdf(file)
+                                                }
+                                            }
+                                            is Result.Error -> { showLoading(false) }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         is Result.Error -> { showLoading(false) }
                     }
@@ -160,7 +161,7 @@ class InvoiceActivity : AppCompatActivity() {
         binding.pb.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun generateInvoicePdf(summaryData: List<SummaryResponse>, detailData: List<DetailResponse>) {
+    private fun generateInvoicePdf(summaryData: List<SummaryResponse>, detailData: List<DetailResponse>): File {
         val sdf = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
         val formattedDate = sdf.format(Date())
         val numberFormat = NumberFormat.getNumberInstance(Locale("in", "ID")).apply {
@@ -481,10 +482,10 @@ class InvoiceActivity : AppCompatActivity() {
 
         document.close()
 
-        showAlert("Invoice berhasil dibuat", AlertType.SUCCESS, file)
+        return file
     }
 
-    private fun showAlert(message: String, type: AlertType, file: File) {
+    private fun showAlert(message: String, type: AlertType) {
         MaterialAlertDialogBuilder(this)
             .setTitle(
                 when (type) {
@@ -502,7 +503,6 @@ class InvoiceActivity : AppCompatActivity() {
             .setPositiveButton("OK") { dialog , _ ->
                 when (type) {
                     AlertType.SUCCESS -> {
-                        openPdf(file)
                         dialog.dismiss()
                         finish()
                     }
