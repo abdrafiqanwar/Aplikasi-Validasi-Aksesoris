@@ -6,8 +6,8 @@ data class FrameNumber(
     @field:SerializedName("frame_number")
     val frameNumber: String,
 
-    @field:SerializedName("vehicle_model")
-    val vehicleModel: String,
+    @field:SerializedName("createdAt")
+    val createdAt: String,
 
     var isSelected: Boolean = false
 )

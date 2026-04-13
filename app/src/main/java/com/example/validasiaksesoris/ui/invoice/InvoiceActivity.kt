@@ -38,6 +38,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class InvoiceActivity : AppCompatActivity() {
 
@@ -111,45 +112,70 @@ class InvoiceActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener {
             val frameNumberSelected = currentList
                 .filter { it.isSelected }
-                .map { it.frameNumber }
 
-            val frameNumber = frameNumberSelected.joinToString(",")
+            val frameNumber = frameNumberSelected.joinToString(",") { it.frameNumber }
 
-            viewModel.getDetail(frameNumber).observe(this) { result ->
-                if (result != null) {
-                    when (result) {
-                        is Result.Loading -> { showLoading(true )}
-                        is Result.Success -> {
-                            showLoading(false)
+            val already = frameNumberSelected.any { it.createdAt.isNotEmpty() }
+            val alreadyList = frameNumberSelected.filter { it.createdAt.isNotEmpty() }
 
-                            detailData = result.data
+            if (already) {
+                val message = alreadyList.joinToString("\n") {
+                    val formattedDate = formatDate(it.createdAt)
+                    "Nomor rangka ${it.frameNumber} sudah dicetak pada tanggal $formattedDate"
+                }
+                showAlert(message, AlertType.ERROR)
+                return@setOnClickListener
+            } else {
+                viewModel.getDetail(frameNumber).observe(this) { result ->
+                    if (result != null) {
+                        when (result) {
+                            is Result.Loading -> { showLoading(true )}
+                            is Result.Success -> {
+                                showLoading(false)
 
-                            if (detailData.isNotEmpty()) {
-                                viewModel.getSummary("Summary").observe(this) { result ->
-                                    if (result != null) {
-                                        when (result) {
-                                            is Result.Loading -> { showLoading(true) }
-                                            is Result.Success -> {
-                                                showLoading(false)
+                                detailData = result.data
 
-                                                summaryData = result.data
+                                if (detailData.isNotEmpty()) {
+                                    viewModel.getSummary("Summary").observe(this) { result ->
+                                        if (result != null) {
+                                            when (result) {
+                                                is Result.Loading -> { showLoading(true) }
+                                                is Result.Success -> {
+                                                    showLoading(false)
 
-                                                if (summaryData.isNotEmpty()) {
-                                                    val file = generateInvoicePdf(summaryData, detailData)
-                                                    showAlert("Invoice berhasil dibuat", AlertType.SUCCESS)
-                                                    openPdf(file)
+                                                    summaryData = result.data
+
+                                                    if (summaryData.isNotEmpty()) {
+                                                        val file = generateInvoicePdf(summaryData, detailData)
+                                                        showAlert("Invoice berhasil dibuat", AlertType.SUCCESS)
+                                                        openPdf(file)
+                                                    }
                                                 }
+                                                is Result.Error -> { showLoading(false) }
                                             }
-                                            is Result.Error -> { showLoading(false) }
                                         }
                                     }
                                 }
                             }
+                            is Result.Error -> { showLoading(false) }
                         }
-                        is Result.Error -> { showLoading(false) }
                     }
                 }
             }
+        }
+    }
+
+    fun formatDate(dateString: String): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val date = inputFormat.parse(dateString)
+
+            val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
+            outputFormat.format(date!!)
+        } catch (e: Exception) {
+            dateString // fallback kalau error
         }
     }
 
