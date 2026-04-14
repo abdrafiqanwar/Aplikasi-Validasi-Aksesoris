@@ -68,6 +68,7 @@ class InvoiceActivity : AppCompatActivity() {
                         val filtered = result.data
                             .filter { it.frameNumber.isNotEmpty() }
                             .reversed()
+                            .sortedBy { it.createdAt.isNotEmpty() }
 
                         currentList = filtered
 
