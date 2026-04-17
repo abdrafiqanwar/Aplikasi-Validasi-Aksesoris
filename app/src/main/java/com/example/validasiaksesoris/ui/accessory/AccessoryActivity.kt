@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.validasiaksesoris.R
 import com.example.validasiaksesoris.data.model.accessory.AccessoryItem
-import com.example.validasiaksesoris.data.model.accessory.AccessoryRequest
+import com.example.validasiaksesoris.data.model.accessory.AccessoryResponse
 import com.example.validasiaksesoris.databinding.ActivityAccessoryBinding
 import com.example.validasiaksesoris.di.Result
 import com.example.validasiaksesoris.ui.ViewModelFactory
@@ -26,8 +26,7 @@ class AccessoryActivity : AppCompatActivity() {
         ViewModelFactory.getInstance()
     }
     private lateinit var accessoryAdapter: AccessoryAdapter
-    private lateinit var vehicleName: Array<String>
-    private lateinit var vehicleData: Map<String, List<AccessoryItem>>
+    private var dataList: List<AccessoryResponse> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityAccessoryBinding.inflate(layoutInflater)
@@ -37,22 +36,25 @@ class AccessoryActivity : AppCompatActivity() {
         val frameNumber = intent.getStringExtra("frameNumber")
         binding.tvFrameNumber.text = frameNumber
 
-        vehicleName = resources.getStringArray(R.array.vehicle_name)
+        viewModel.getAccessories("Master Data").observe(this) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> { showLoading(true) }
+                    is Result.Success -> {
+                        showLoading(false)
 
-        vehicleData = vehicleName.associateWith { name ->
-            val arrayName = "acc_" + name.lowercase().replace("[^a-z0-9]".toRegex(), "")
+                        dataList = result.data
 
-            val resId = resources.getIdentifier(arrayName, "array", packageName)
+                        val models = mutableListOf("Pilih model kendaraan")
+                        models.addAll(dataList.map { it.vehicleModel })
 
-            if (resId != 0) {
-                resources.getStringArray(resId).map { label ->
-                    AccessoryItem(
-                        key = label,
-                        label = label
-                    )
+                        setupSpinner(models)
+                    }
+                    is Result.Error -> {
+                        showLoading(false)
+                        showAlert(result.error, AlertType.ERROR)
+                    }
                 }
-            } else {
-                emptyList()
             }
         }
 
@@ -60,10 +62,50 @@ class AccessoryActivity : AppCompatActivity() {
         accessoryAdapter = AccessoryAdapter(mutableListOf())
         binding.rvAccessory.adapter = accessoryAdapter
 
+        binding.btnSubmit.setOnClickListener {
+
+            if (accessoryAdapter.hasUnselected()) {
+                showAlert("Silahkan pilih status aksesoris", AlertType.ERROR)
+                return@setOnClickListener
+            }
+
+            val selectedVehicleModel = binding.vehicleModel.selectedItem
+            val selectedAccessories = accessoryAdapter.getSelectedAccessories()
+
+            val request = AccessoryResponse(
+                frameNumber.toString(),
+                selectedVehicleModel.toString(),
+                selectedAccessories
+            )
+
+            viewModel.sendData(request).observe(this) { result ->
+                if (result != null) {
+                    when (result) {
+                        is Result.Loading -> {
+                            showLoading(true)
+                            setUiEnabled(false)
+                        }
+                        is Result.Success -> {
+                            showLoading(false)
+                            setUiEnabled(true)
+                            showAlert(result.data.message, AlertType.SUCCESS)
+                        }
+                        is Result.Error -> {
+                            showLoading(false)
+                            setUiEnabled(true)
+                            showAlert(result.error, AlertType.ERROR)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupSpinner(models: List<String>) {
         val adapterVehicleModel = object : ArrayAdapter<String>(
             this,
             R.layout.selected_item,
-            vehicleName
+            models
         ) {
             override fun isEnabled(position: Int): Boolean = position != 0
 
@@ -92,12 +134,15 @@ class AccessoryActivity : AppCompatActivity() {
         binding.vehicleModel.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (position != 0) {
-                        showAccessory()
-                    }
+                    if (position === 0) return
 
-                    val selectedVehicle = vehicleName[position]
-                    val accessories = vehicleData[selectedVehicle] ?: emptyList()
+                    showAccessory()
+
+                    val selectedVehicle = dataList[position - 1]
+
+                    val accessories = selectedVehicle.accessories.map {
+                        AccessoryItem(it.name)
+                    }
 
                     accessoryAdapter.clearSelection()
                     accessoryAdapter.updateData(accessories)
@@ -105,44 +150,6 @@ class AccessoryActivity : AppCompatActivity() {
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-
-        binding.btnSubmit.setOnClickListener {
-
-            if (accessoryAdapter.hasUnselected()) {
-                showAlert("Silahkan pilih status aksesoris", AlertType.ERROR)
-                return@setOnClickListener
-            }
-
-            val selectedVehicleModel = binding.vehicleModel.selectedItem
-            val selectedAccessories = accessoryAdapter.getSelection()
-
-            val request = AccessoryRequest(
-                frameNumber.toString(),
-                selectedVehicleModel.toString(),
-                selectedAccessories
-            )
-
-            viewModel.sendData(request).observe(this) { data ->
-                if (data != null) {
-                    when (data) {
-                        is Result.Loading -> {
-                            showLoading(true)
-                            setUiEnabled(false)
-                        }
-                        is Result.Success -> {
-                            showLoading(false)
-                            setUiEnabled(true)
-                            showAlert(data.data.message, AlertType.SUCCESS)
-                        }
-                        is Result.Error -> {
-                            showLoading(false)
-                            setUiEnabled(true)
-                            showAlert(data.error, AlertType.ERROR)
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun showAccessory() {
@@ -155,6 +162,8 @@ class AccessoryActivity : AppCompatActivity() {
 
     private fun showLoading(show: Boolean) {
         binding.btnSubmit.visibility = if (show) View.GONE else View.VISIBLE
+        binding.tvVehicleModel.visibility = if (show) View.GONE else View.VISIBLE
+        binding.vehicleModel.visibility = if (show) View.GONE else View.VISIBLE
         binding.pb.visibility = if (show) View.VISIBLE else View.GONE
     }
 

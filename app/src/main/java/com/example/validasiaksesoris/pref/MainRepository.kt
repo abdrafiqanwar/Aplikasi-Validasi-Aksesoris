@@ -3,7 +3,7 @@ package com.example.validasiaksesoris.pref
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.validasiaksesoris.data.model.ErrorResponse
-import com.example.validasiaksesoris.data.model.accessory.AccessoryRequest
+import com.example.validasiaksesoris.data.model.accessory.AccessoryResponse
 import com.example.validasiaksesoris.data.model.invoice.FrameNumber
 import com.example.validasiaksesoris.data.model.invoice.DetailResponse
 import com.example.validasiaksesoris.data.model.invoice.SummaryResponse
@@ -15,6 +15,21 @@ import retrofit2.HttpException
 class MainRepository private constructor(
     private var apiService: ApiService
 ){
+    fun getAccessories(sheet: String): LiveData<Result<List<AccessoryResponse>>> = liveData {
+        emit(Result.Loading)
+
+        try {
+            val response = apiService.getAccessories(sheet)
+
+            emit(Result.Success(response))
+        } catch (e: HttpException) {
+            val jsonInString = e.response()?.errorBody()?.string()
+            val errorBody = Gson().fromJson(jsonInString, ErrorResponse::class.java)
+            val errorMessage = errorBody.message
+
+            emit(Result.Error(errorMessage))
+        }
+    }
     fun getData(): LiveData<Result<List<FrameNumber>>> = liveData {
         emit(Result.Loading)
 
@@ -63,7 +78,7 @@ class MainRepository private constructor(
         }
     }
 
-    fun sendData(request: AccessoryRequest): LiveData<Result<ErrorResponse>> = liveData {
+    fun sendData(request: AccessoryResponse): LiveData<Result<ErrorResponse>> = liveData {
         emit(Result.Loading)
 
         try {

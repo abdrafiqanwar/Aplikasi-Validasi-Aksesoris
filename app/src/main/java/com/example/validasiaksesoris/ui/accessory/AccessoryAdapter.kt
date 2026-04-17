@@ -17,7 +17,6 @@ class AccessoryAdapter (
     private val accessories: MutableList<AccessoryItem>
 ) : RecyclerView.Adapter<AccessoryAdapter.ViewHolder>() {
 
-    private val selections = mutableMapOf<String, Boolean>()
     private var enable = true
 
     class ViewHolder(val binding: ItemAccessoryBinding) : RecyclerView.ViewHolder(binding.root)
@@ -32,7 +31,7 @@ class AccessoryAdapter (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = accessories[position]
-        holder.binding.tvName.text = item.label
+        holder.binding.tvName.text = item.name
         holder.binding.accessory.apply {
             isEnabled  = enable
             isClickable = enable
@@ -71,8 +70,7 @@ class AccessoryAdapter (
         adapter.setDropDownViewResource(R.layout.item_dropdown)
         holder.binding.accessory.adapter = adapter
 
-        val previousSelection = selections[item.key]
-        when (previousSelection) {
+        when (item.isSelected) {
             true -> holder.binding.accessory.setSelection(1)
             false -> holder.binding.accessory.setSelection(2)
             null -> holder.binding.accessory.setSelection(0)
@@ -82,9 +80,9 @@ class AccessoryAdapter (
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
                     when (pos) {
-                        1 -> selections[item.key] = true
-                        2 -> selections[item.key] = false
-                        else -> selections.remove(item.key)
+                        1 -> item.isSelected = true
+                        2 -> item.isSelected = false
+                        else -> item.isSelected = null
                     }
                 }
 
@@ -93,10 +91,6 @@ class AccessoryAdapter (
     }
 
     override fun getItemCount(): Int = accessories.size
-
-    fun getSelection(): Map<String, Boolean> = selections
-
-    fun clearSelection() = selections.clear()
 
     fun updateData(newData: List<AccessoryItem>) {
         accessories.clear()
@@ -109,5 +103,12 @@ class AccessoryAdapter (
         notifyDataSetChanged()
     }
 
-    fun hasUnselected(): Boolean = selections.size < accessories.size
+    fun getSelectedAccessories(): List<AccessoryItem> = accessories
+
+    fun clearSelection() {
+        accessories.forEach { it.isSelected = null }
+        notifyDataSetChanged()
+    }
+
+    fun hasUnselected(): Boolean = accessories.any { it.isSelected == null }
 }

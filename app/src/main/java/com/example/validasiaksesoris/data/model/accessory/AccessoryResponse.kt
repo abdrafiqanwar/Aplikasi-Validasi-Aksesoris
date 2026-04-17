@@ -2,7 +2,7 @@ package com.example.validasiaksesoris.data.model.accessory
 
 import com.google.gson.annotations.SerializedName
 
-data class AccessoryRequest(
+data class AccessoryResponse(
     @field:SerializedName("frame_number")
     val frameNumber: String,
 
@@ -10,5 +10,5 @@ data class AccessoryRequest(
     val vehicleModel: String,
 
     @field:SerializedName("accessories")
-    val accessories: Map<String, Boolean>
+    val accessories: List<AccessoryItem>
 )

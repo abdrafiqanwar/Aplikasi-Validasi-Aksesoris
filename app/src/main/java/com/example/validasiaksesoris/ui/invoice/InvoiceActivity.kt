@@ -76,7 +76,7 @@ class InvoiceActivity : AppCompatActivity() {
                             adapter = InvoiceAdapter { item ->
                                 val selectedCount = currentList.count { it.isSelected }
 
-                                if (selectedCount > 21) {
+                                if (selectedCount > 20) {
                                     currentList[item].isSelected = false
                                     adapter?.notifyItemChanged(item)
                                     Toast.makeText(this, "Maksimal 20 nomor rangka", Toast.LENGTH_SHORT).show()
